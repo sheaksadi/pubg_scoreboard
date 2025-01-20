@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - DISCORD_AVTAR=${DISCORD_AVTAR}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - PUBG_API_KEY=${PUBG_API_KEY}
