@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config({path: "../.env"});
 
 import {
-    Channel,
     Client,
-    Collection,
     Events,
     GatewayIntentBits,
     GuildTextBasedChannel,
