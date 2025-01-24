@@ -134,7 +134,7 @@ async function sendAllTeamsToDiscord(teams: Team[], webhookUrl: string, MVP: Par
         }
 
         return {
-            title: `Team #${index + 1} - Rank: ${team.attributes.stats.rank}`,
+            title: `Team #${team.attributes.stats.teamId} - Rank: ${team.attributes.stats.rank}`,
             description: `${
                 team.attributes.won === "true" ? "🏆 Winner!\n" : ""
             }**Total Kills:** ${totalKills}`,
