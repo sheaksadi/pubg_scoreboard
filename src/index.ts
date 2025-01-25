@@ -117,7 +117,7 @@ async function sendAllTeamsToDiscord(teams: Team[], webhookUrl: string, MVP: Par
 
             return {
                 name: name,
-                value: `Kills: ${stats.kills}\nDamage: ${stats.damageDealt}\nAssists: ${stats.assists}`,
+                value: `Kills: ${stats.kills}\nDamage: ${Math.round(stats.damageDealt)}\nAssists: ${stats.assists}`,
                 inline: true,
             };
         });
