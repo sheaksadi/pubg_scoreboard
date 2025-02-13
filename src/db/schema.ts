@@ -1,5 +1,5 @@
 import { integer, real, text, sqliteTable } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import {eq, or, sql} from 'drizzle-orm';
 
 // Players table
 export const players = sqliteTable('players', {
@@ -202,19 +202,40 @@ export const createMatchStats = async (
 
     }
 ) => {
-    const result = await db.insert(matchStats)
-        .values(data)
-        .returning({ matchStatId: matchStats.matchStatId });
+    try {
+        const player = await db.select()
+            .from(players)
+            .where(eq(players.playerId, data.playerId));
 
-    // Update player totals
-    await updatePlayerTotals(db, data.playerId, {
-        score: data.score,
-        kills: data.kills,
-        assists: data.assists,
-        damage: 0 // Add damage when available
-    });
+        const match = await db.select()
+            .from(matches)
+            .where(eq(matches.matchId, data.matchId));
 
-    return result;
+        if (!player || player.length === 0) {
+            throw new Error(`Player with ID ${data.playerId} not found`);
+        }
+
+        if (!match || match.length === 0) {
+            throw new Error(`Match with ID ${data.matchId} not found`);
+        }
+
+        const result = await db.insert(matchStats)
+            .values(data)
+            .returning({ matchStatId: matchStats.matchStatId });
+
+        // Update player totals
+        await updatePlayerTotals(db, data.playerId, {
+            score: data.score,
+            kills: data.kills,
+            assists: data.assists,
+            damage: 0 // Add damage when available
+        });
+
+        return result;
+    }catch (error) {
+        console.error('Error in createMatchStats:', error);
+    }
+
 };
 
 // export const getPlayerMatchHistory = (db: any, playerId: number) => {
@@ -324,17 +345,66 @@ export const getMatchDetails = async (db: any, matchId: number) => {
 
 
 export const findOrCreatePlayer = async (db: any, username: string, playerId?: string) => {
-    // Try to find existing player
-    const existingPlayer = await db.select()
-        .from(players)
-        .where(sql`${players.username} = ${username}`)
-        .limit(1);
+    try {
 
-    if (existingPlayer.length > 0) {
-        return existingPlayer[0];
+        // Try to find existing player
+        const existingPlayer = await db.select()
+            .from(players)
+            .where(eq(players.username, username));
+
+
+        if (existingPlayer.length > 0) {
+            return existingPlayer[0];
+        }
+
+        // If no player exists, create new one
+        const newPlayerData = {
+            username: username,
+            playerId: playerId || crypto.randomUUID(),
+            totalScore: 0,
+            totalKills: 0,
+            totalAssists: 0,
+            totalDamage: 0,
+            totalMatchesPlayed: 0,
+        };
+
+
+
+        const insertResult = await db.insert(players)
+            .values(newPlayerData)
+            .returning();
+
+
+
+        if (!insertResult || insertResult.length === 0) {
+            throw new Error('Insert returned no data');
+        }
+
+        return insertResult[0];
+    } catch (error) {
+        // Detailed error logging
+        console.error('Error in findOrCreatePlayer:', {
+            error,
+            message: error.message,
+            stack: error.stack
+        });
+        throw error;
     }
+};
+export const checkPlayerExists = async (db: any, username: string) => {
+    try {
+        const result = await db.select()
+            .from(players)
+            .where(eq(players.username, username));
 
-    // Create new player if not found
-    const [newPlayer] = await createPlayer(db, username, playerId);
-    return newPlayer;
+
+
+        return {
+            exists: result.length > 0,
+            player: result.length > 0 ? result[0] : null
+        };
+    } catch (error) {
+        console.error('Error checking player:', error);
+        throw error;
+    }
 };

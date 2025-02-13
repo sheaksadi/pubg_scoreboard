@@ -99,3 +99,40 @@ export interface Team extends Roster {
 export interface TeamMember extends Participant {
     MVPScore: number;
 }
+
+
+
+export type PlayerResponse = {
+    data: Array<{
+        type: string;
+        id: string;
+        attributes: {
+            stats: null;
+            titleId: string;
+            shardId: string;
+            patchVersion: string;
+            banType: string;
+            clanId: string;
+            name: string;
+        };
+        relationships: {
+            assets: {
+                data: Array<any>;
+            };
+            matches: {
+                data: Array<{
+                    type: string;
+                    id: string;
+                }>;
+            };
+        };
+        links: {
+            self: string;
+            schema: string;
+        };
+    }>;
+    links: {
+        self: string;
+    };
+    meta: Record<string, never>;
+}

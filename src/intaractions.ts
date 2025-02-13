@@ -1,12 +1,13 @@
 import { Interaction } from 'discord.js';
 import {db, WEBHOOK_URL} from './config.js';
-import { getData } from './api.js';
+import {getData, getPlayerData} from './api.js';
 import {sendToDiscord, sendTopPlayersToDiscord} from './discord.js';
 import { getLastMatches, getLastCustomGame } from './matches.js';
 import {calculateMVP, calculateMVPScore} from "./MVP.js";
 import {
+    checkPlayerExists,
     createMatch,
-    createMatchStats,
+    createMatchStats, createPlayer,
     findOrCreateMatch,
     findOrCreatePlayer,
     getTopPlayers,
@@ -85,17 +86,28 @@ async function updateDB(matchId: string) {
     for (const team of teams) {
         for (const player of team.players) {
             try {
-                const p = await findOrCreatePlayer(db, player.attributes.stats.name, player.id);
+                let playerName = player.attributes.stats.name
+                console.log(playerName)
+                let playerExists = await checkPlayerExists(db, playerName)
+                let playerId = playerExists?.player?.playerId
+                if (!playerExists.exists){
+                    let playerInfo = await getPlayerData(playerName)
+                    playerId = playerInfo.data[0].id
+                    await createPlayer(db, playerName, playerId)
+                }
+
+
+
                 const m = await findOrCreateMatch(db,{
                     matchId: data.data.id,
                     mapName: data.data.attributes.mapName,
                     duration: data.data.attributes.duration
                 });
-                console.log("aigf8oiaegho gaoifgoaeig foiag foiagy foia fgoipaead",m)
+
 
                 await createMatchStats(db, {
                     matchId: data.data.id,
-                    playerId: player.id,
+                    playerId: playerId,
                     kills: player.attributes.stats.kills,
                     damage: player.attributes.stats.damageDealt,
                     assists: player.attributes.stats.assists,
@@ -190,7 +202,9 @@ export async function handleInteraction(interaction: Interaction) {
                     });
 
                     const lastMatches = await getLastMatches(playerName, 15);
+                    console.log("last matches", lastMatches)
                     const matchId = await getLastCustomGame(lastMatches);
+                    console.log("match id", matchId)
 
                     if (!matchId) {
                         await interaction.followUp({
@@ -199,8 +213,10 @@ export async function handleInteraction(interaction: Interaction) {
                         });
                         return;
                     }
-                    await updateDB(matchId)
+
                     await sendDataToDiscord(matchId);
+
+                    await updateDB(matchId)
                 } catch (error) {
                     await interaction.followUp({
                         content: '❌ Failed to process request',
@@ -217,8 +233,9 @@ export async function handleInteraction(interaction: Interaction) {
                         ephemeral: true
                     });
 
-                    await updateDB(matchId)
+
                     await sendDataToDiscord(matchId);
+                    await updateDB(matchId)
                 } catch (error) {
                     await interaction.followUp({
                         content: '❌ Failed to process request',

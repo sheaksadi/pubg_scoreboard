@@ -1,6 +1,6 @@
 // api.ts
 import axios from 'axios';
-import { MatchData } from './types.js';
+import {MatchData, PlayerResponse} from './types.js';
 import {API_KEY} from "./config.js";
 
 const api = axios.create({
@@ -22,8 +22,20 @@ export async function getData(matchId: string): Promise<MatchData> {
     return res.data;
 }
 
-export async function getPlayerData(playerName: string) {
+import { RateLimiter } from 'limiter';
+
+// Create a rate limiter that allows 5 requests per second
+const limiter = new RateLimiter({
+    tokensPerInterval: 5,
+    interval: 1000 * 60, // 1 second
+    fireImmediately: false
+});
+
+export async function getPlayerData(playerName: string): Promise<PlayerResponse> {
     try {
+        // Wait for rate limiter to allow the request
+        await limiter.removeTokens(1);
+
         const response = await api.get('steam/players', {
             params: {
                 'filter[playerNames]': playerName
@@ -31,7 +43,11 @@ export async function getPlayerData(playerName: string) {
         });
         return response.data;
     } catch (error) {
-        console.error('Error fetching player data:', error);
+        if (error instanceof Error) {
+            console.error('Error fetching player data:', error.message);
+        } else {
+            console.error('Error fetching player data:', error);
+        }
         throw error;
     }
 }
