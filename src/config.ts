@@ -18,6 +18,8 @@ export const client = new Client({
 });
 
 const sqlite = new Database("./../" + process.env.DB_FILE_NAME!);
+console.log("./../" + process.env.DB_FILE_NAME!)
+console.log(sqlite)
 export const db = drizzle(sqlite);
 
 
