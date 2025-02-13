@@ -3,7 +3,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: ".env" });
 
 export const WEBHOOK_URL = process.env.WEBHOOK_URL;
 export const BOT_TOKEN = process.env.DISCORD_TOKEN;
