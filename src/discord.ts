@@ -11,7 +11,7 @@ export async function sendTopPlayersToDiscord(topPlayers: any[], webhookUrl: str
 
     const embeds = topPlayers.map((player, index) => ({
         title: `#${index + 1} - ${player.username}`,
-        description: `**Total Score:** ${player.totalScore}\n**Kills:** ${player.totalKills} | **Assists:** ${player.totalAssists} | **Damage:** ${Math.round(player.totalDamage)}`,
+        description: `**Total Score:** ${Math.round(player.totalScore)}\n**Kills:** ${player.totalKills} | **Assists:** ${player.totalAssists} | **Damage:** ${Math.round(player.totalDamage)}`,
         color: index === 0 ? 0xFFD700 : 0x00FFFF,
     }));
 
