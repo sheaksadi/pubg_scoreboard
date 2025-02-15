@@ -87,12 +87,18 @@ async function updateDB(matchId: string) {
         for (const player of team.players) {
             try {
                 let playerName = player.attributes.stats.name
+                console.log(player.attributes.stats.playerId, "player id")
+
                 console.log(playerName)
                 let playerExists = await checkPlayerExists(db, playerName)
-                let playerId = playerExists?.player?.playerId
+                // let playerId = playerExists?.player?.playerId
+                let playerId = player.attributes.stats.playerId
                 if (!playerExists.exists){
-                    let playerInfo = await getPlayerData(playerName)
-                    playerId = playerInfo.data[0].id
+                    if (!playerId.startsWith("account.")){
+                        let playerInfo = await getPlayerData(playerName)
+                        playerId = playerInfo.data[0].id
+                    }
+
                     await createPlayer(db, playerName, playerId)
                 }
 

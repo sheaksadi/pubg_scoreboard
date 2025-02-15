@@ -228,7 +228,7 @@ export const createMatchStats = async (
             score: data.score,
             kills: data.kills,
             assists: data.assists,
-            damage: 0 // Add damage when available
+            damage: data.damage
         });
 
         return result;
