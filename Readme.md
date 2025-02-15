@@ -60,14 +60,23 @@ docker compose up app
 ## MVP Score Calculation
 
 The bot calculates the score based on the following formula:
+```bash
+MvpScore = weight_kills × kills + weight_assists × assists + weight_damageDealt × damageDealt + weight_timeSurvived × timeSurvivedNormalized + weight_rank × rankBonus
+```
 
-$$
-\text{MvpScore} = \text{weight}_\text{kills} \cdot \text{kills} +
-\text{weight}_\text{assists} \cdot \text{assists} +
-\text{weight}_\text{damageDealt} \cdot \text{damageDealt} +
-\text{weight}_\text{timeSurvived} \cdot \text{timeSurvivedNormalized} +
-\text{weight}_\text{rank} \cdot \text{rankBonus}
-$$
+[//]: # (  $$)
+
+[//]: # (  \text{MvpScore} = \text{weight}_\text{kills} \cdot \text{kills} +)
+
+[//]: # (  \text{weight}_\text{assists} \cdot \text{assists} +)
+
+[//]: # (  \text{weight}_\text{damageDealt} \cdot \text{damageDealt} +)
+
+[//]: # (  \text{weight}_\text{timeSurvived} \cdot \text{timeSurvivedNormalized} +)
+
+[//]: # (  \text{weight}_\text{rank} \cdot \text{rankBonus})
+
+[//]: # (  $$)
 
 ### Current weights
 ```javascript
