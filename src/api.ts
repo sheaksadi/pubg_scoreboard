@@ -1,6 +1,6 @@
 // api.ts
 import axios from 'axios';
-import {MatchData, PlayerResponse} from './types.js';
+import {MatchData, PlayerResponse, PlayerSeasonData, RankedPlayerStats} from './types.js';
 import {API_KEY} from "./config.js";
 
 const api = axios.create({
@@ -51,3 +51,40 @@ export async function getPlayerData(playerName: string): Promise<PlayerResponse>
         throw error;
     }
 }
+
+
+export async function getPlayerSeasonData(playerAccountId: string, seasonId: string): Promise<PlayerSeasonData> {
+    await limiter.removeTokens(1);
+    try {
+        const response = await api.get(`steam/players/${playerAccountId}/seasons/${seasonId}`);
+        return response.data;
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error fetching player season data:', error.message);
+        } else {
+            console.error('Error fetching player season data:', error);
+        }
+        throw error;
+    }
+}
+
+export async function getPlayerSeasonRankedData(playerAccountId: string, seasonId: string): Promise<RankedPlayerStats> {
+    await limiter.removeTokens(1);
+    try {
+        const response = await api.get(`steam/players/${playerAccountId}/seasons/${seasonId}/ranked`);
+        return response.data;
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error fetching player season data:', error.message);
+        } else {
+            console.error('Error fetching player season data:', error);
+        }
+        throw error;
+    }
+}
+
+
+
+
+
+

@@ -136,3 +136,172 @@ export type PlayerResponse = {
     };
     meta: Record<string, never>;
 }
+
+
+
+
+
+
+export interface PlayerSeasonData {
+    data: {
+        type: string;
+        attributes: {
+            gameModeStats: {
+                duo: GameModeStats;
+                "duo-fpp": GameModeStats;
+                solo: GameModeStats;
+                "solo-fpp": GameModeStats;
+                squad: GameModeStats;
+                "squad-fpp": GameModeStats;
+            };
+            bestRankPoint: number;
+        };
+        relationships: {
+            player: {
+                data: {
+                    type: string;
+                    id: string;
+                };
+            };
+            matchesSolo: {
+                data: Match[];
+            };
+            matchesSoloFPP: {
+                data: Match[];
+            };
+            matchesDuo: {
+                data: Match[];
+            };
+            matchesDuoFPP: {
+                data: Match[];
+            };
+            matchesSquad: {
+                data: Match[];
+            };
+            matchesSquadFPP: {
+                data: Match[];
+            };
+            season: {
+                data: {
+                    type: string;
+                    id: string;
+                };
+            };
+        };
+        links: {
+            self: string;
+        };
+        meta: Record<string, unknown>;
+    };
+}
+
+export interface RankedPlayerStats {
+    data: {
+        type: string;
+        attributes: {
+            rankedGameModeStats: {
+                squad: RankedGameModeStats;
+                "squad-fpp": RankedGameModeStats;
+            };
+        };
+        relationships: {
+            player: {
+                data: {
+                    type: string;
+                    id: string;
+                };
+            };
+            season: {
+                data: {
+                    type: string;
+                    id: string;
+                };
+            };
+        };
+        links: {
+            self: string;
+        };
+        meta: Record<string, unknown>;
+    };
+}
+
+export interface GameModeStats {
+    assists: number;
+    boosts: number;
+    dBNOs: number;
+    dailyKills: number;
+    dailyWins: number;
+    damageDealt: number;
+    days: number;
+    headshotKills: number;
+    heals: number;
+    killPoints: number;
+    kills: number;
+    longestKill: number;
+    longestTimeSurvived: number;
+    losses: number;
+    maxKillStreaks: number;
+    mostSurvivalTime: number;
+    rankPoints: number;
+    rankPointsTitle: string;
+    revives: number;
+    rideDistance: number;
+    roadKills: number;
+    roundMostKills: number;
+    roundsPlayed: number;
+    suicides: number;
+    swimDistance: number;
+    teamKills: number;
+    timeSurvived: number;
+    top10s: number;
+    vehicleDestroys: number;
+    walkDistance: number;
+    weaponsAcquired: number;
+    weeklyKills: number;
+    weeklyWins: number;
+    winPoints: number;
+    wins: number;
+}
+
+export interface RankedGameModeStats {
+    currentTier: {
+        tier: string;
+        subTier: string;
+    };
+    currentRankPoint: number;
+    bestTier: {
+        tier: string;
+        subTier: string;
+    };
+    bestRankPoint: number;
+    roundsPlayed: number;
+    avgRank: number;
+    avgSurvivalTime: number;
+    top10Ratio: number;
+    winRatio: number;
+    assists: number;
+    wins: number;
+    kda: number;
+    kdr: number;
+    kills: number;
+    deaths: number;
+    roundMostKills: number;
+    longestKill: number;
+    headshotKills: number;
+    headshotKillRatio: number;
+    damageDealt: number;
+    dBNOs: number;
+    reviveRatio: number;
+    revives: number;
+    heals: number;
+    boosts: number;
+    weaponsAcquired: number;
+    teamKills: number;
+    playTime: number;
+    killStreak: number;
+}
+
+export interface Match {
+    type: string;
+    id: string;
+}

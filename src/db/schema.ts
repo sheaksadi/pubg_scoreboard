@@ -38,6 +38,92 @@ export const matchStats = sqliteTable('match_stats', {
     createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
+
+// Player Game Mode Stats table (aggregated stats by game mode)
+export const playerGameModeStats = sqliteTable('player_game_mode_stats', {
+    playerGameModeStatId: integer('player_game_mode_stat_id').primaryKey(),
+    playerId: text('player_id')
+        .references(() => players.playerId),
+    gameMode: text('game_mode').notNull(), // 'solo', 'duo', 'squad', etc.
+    perspective: text('perspective'), // 'fpp' or 'tpp'
+    assists: integer('assists').default(0),
+    boosts: integer('boosts').default(0),
+    dBNOs: integer('dbnos').default(0),
+    dailyKills: integer('daily_kills').default(0),
+    dailyWins: integer('daily_wins').default(0),
+    damageDealt: real('damage_dealt').default(0),
+    days: integer('days').default(0),
+    headshotKills: integer('headshot_kills').default(0),
+    heals: integer('heals').default(0),
+    killPoints: integer('kill_points').default(0),
+    kills: integer('kills').default(0),
+    longestKill: real('longest_kill').default(0),
+    longestTimeSurvived: integer('longest_time_survived').default(0),
+    losses: integer('losses').default(0),
+    maxKillStreaks: integer('max_kill_streaks').default(0),
+    mostSurvivalTime: integer('most_survival_time').default(0),
+    revives: integer('revives').default(0),
+    rideDistance: real('ride_distance').default(0),
+    roadKills: integer('road_kills').default(0),
+    roundMostKills: integer('round_most_kills').default(0),
+    roundsPlayed: integer('rounds_played').default(0),
+    suicides: integer('suicides').default(0),
+    swimDistance: real('swim_distance').default(0),
+    teamKills: integer('team_kills').default(0),
+    timeSurvived: integer('time_survived').default(0),
+    top10s: integer('top10s').default(0),
+    vehicleDestroys: integer('vehicle_destroys').default(0),
+    walkDistance: real('walk_distance').default(0),
+    weaponsAcquired: integer('weapons_acquired').default(0),
+    weeklyKills: integer('weekly_kills').default(0),
+    weeklyWins: integer('weekly_wins').default(0),
+    winPoints: integer('win_points').default(0),
+    wins: integer('wins').default(0),
+    updatedAt: integer('updated_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+// Ranked Stats table (for ranked mode statistics)
+export const playerRankedStats = sqliteTable('player_ranked_stats', {
+    playerRankedStatId: integer('player_ranked_stat_id').primaryKey(),
+    playerId: text('player_id')
+        .references(() => players.playerId),
+    gameMode: text('game_mode').notNull(), // 'squad', etc.
+    perspective: text('perspective'), // 'fpp' or 'tpp'
+    currentTier: text('current_tier').default('Bronze'),
+    currentSubTier: text('current_sub_tier').default('1'),
+    currentRankPoint: integer('current_rank_point').default(0),
+    bestTier: text('best_tier').default('Bronze'),
+    bestSubTier: text('best_sub_tier').default('1'),
+    bestRankPoint: integer('best_rank_point').default(0),
+    roundsPlayed: integer('rounds_played').default(0),
+    avgRank: real('avg_rank').default(0),
+    avgSurvivalTime: real('avg_survival_time').default(0),
+    top10Ratio: real('top10_ratio').default(0),
+    winRatio: real('win_ratio').default(0),
+    assists: integer('assists').default(0),
+    wins: integer('wins').default(0),
+    kda: real('kda').default(0),
+    kdr: real('kdr').default(0),
+    kills: integer('kills').default(0),
+    deaths: integer('deaths').default(0),
+    roundMostKills: integer('round_most_kills').default(0),
+    longestKill: real('longest_kill').default(0),
+    headshotKills: integer('headshot_kills').default(0),
+    headshotKillRatio: real('headshot_kill_ratio').default(0),
+    damageDealt: real('damage_dealt').default(0),
+    dBNOs: integer('dbnos').default(0),
+    reviveRatio: real('revive_ratio').default(0),
+    revives: integer('revives').default(0),
+    heals: integer('heals').default(0),
+    boosts: integer('boosts').default(0),
+    weaponsAcquired: integer('weapons_acquired').default(0),
+    teamKills: integer('team_kills').default(0),
+    playTime: integer('play_time').default(0),
+    killStreak: integer('kill_streak').default(0),
+    updatedAt: integer('updated_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+
 // export const createMatchStats = async (
 //     db: any,
 //     data: {
@@ -122,7 +208,7 @@ export const updatePlayerTotals = async (
         })
         .where(sql`${players.playerId} = ${playerId}`);
 };
-// Helper function to create a new player
+
 export const createPlayer = async (
     db: any,
     username: string,
@@ -286,6 +372,8 @@ export const resetPlayerTotals = async (
         throw error; // Re-throw the error for handling upstream
     }
 };
+
+
 export const getTopPlayers = (db: any, limit: number = 10) => {
     return db.select({
         username: players.username,
