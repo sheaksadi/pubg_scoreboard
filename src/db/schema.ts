@@ -1,4 +1,4 @@
-import { integer, real, text, sqliteTable } from 'drizzle-orm/sqlite-core';
+import {integer, real, text, sqliteTable, primaryKey} from 'drizzle-orm/sqlite-core';
 import {eq, or, sql} from 'drizzle-orm';
 
 // Players table
@@ -12,6 +12,60 @@ export const players = sqliteTable('players', {
     totalMatchesPlayed: integer('total_matches_played').default(0),
     createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
+
+
+export const discordUsers = sqliteTable('discord_users', {
+    discordId: text('discord_id').primaryKey().notNull().unique(),
+    username: text('username').notNull().unique(),
+    avatar: text('avatar'),
+    discriminator: text('discriminator'),
+    public_flags: integer('public_flags'),
+    flags: integer('flags'),
+    banner: text('banner'),
+    accent_color: integer('accent_color'),
+    global_name: text('global_name'),
+    avatar_decoration_data: text('avatar_decoration_data'),
+    banner_color: text('banner_color'),
+    clan: text('clan'),
+    primary_guild: text('primary_guild'),
+    mfa_enabled: integer('mfa_enabled'),
+    locale: text('locale'),
+    premium_type: integer('premium_type'),
+    email: text('email'),
+    verified: integer('verified'),
+    createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+})
+
+export const discordRoles = sqliteTable('discord_roles', {
+    roleId: text('role_id').primaryKey().notNull().unique(),
+    name: text('name').notNull().unique(),
+    color: integer('color'),
+    createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const discordUserRoles = sqliteTable('discord_user_roles', {
+    discordId: text('discord_id')
+        .notNull()
+        .references(() => discordUsers.discordId, { onDelete: 'cascade' }),
+    roleId: text('role_id')
+        .notNull()
+        .references(() => discordRoles.roleId, { onDelete: 'cascade' }),
+    assignedAt: integer('assigned_at').default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+    pk: primaryKey({ columns: [table.discordId, table.roleId] })
+}));
+
+export const Members = sqliteTable('members', {
+    id: text('id').primaryKey().notNull().unique(),
+    playerId: text('player_id')
+        .references(() => players.playerId),
+    discordId: text('discord_id')
+        .references(() => discordUsers.discordId),
+    adminPrivilege: integer('admin_privilege').default(0),
+    nickname: text('nickname'),
+    createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+})
+
 
 // Matches table
 export const matches = sqliteTable('matches', {

@@ -9,11 +9,24 @@ export const WEBHOOK_URL = process.env.WEBHOOK_URL;
 export const BOT_TOKEN = process.env.DISCORD_TOKEN;
 export const API_KEY = process.env.PUBG_API_KEY;
 
+export const DISCORD_CONFIG = {
+    clientId: process.env.DISCORD_CLIENT_ID || '',
+    clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
+    redirectUri: process.env.DISCORD_REDIRECT_URI || 'http://localhost:3100/api/auth/callback'
+}
+
+export const JWT_SECRET = process.env.JWT_SECRET || 'hehesecter420'
+
+
 export const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessageReactions
     ]
 });
 

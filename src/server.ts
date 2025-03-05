@@ -2,10 +2,15 @@ import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
 
-import {checkPlayerExists, createPlayer, getTopPlayers} from "./src/db/schema.js";
-import {db} from "./src/config.js";
-import {getPlayerData, getPlayerSeasonData} from "./src/api.js";
-import {transformPlayerSeasonData, upsertPlayerGameModeStats} from "./src/db/seasonalStats.js";
+import {checkPlayerExists, createPlayer, getTopPlayers} from "./db/schema.js";
+import {db} from "./config.js";
+import {getPlayerData, getPlayerSeasonData, getPlayerSeasonRankedData} from "./api.js";
+import {
+    getOrganizedGameModeStats, getOrganizedRankedStats,
+    transformPlayerSeasonData,
+    transformRankedPlayerStats,
+    upsertPlayerGameModeStats, upsertPlayerRankedStats
+} from "./db/seasonalStats.js";
 
 
 const app = express();
@@ -25,7 +30,14 @@ app.get('/scrims',async (req, res) => {
     console.log(con)
     res.send(con);
 });
-
+app.get('/seasonal',async (req, res) => {
+    let data = await getOrganizedGameModeStats(db)
+    res.send(data);
+})
+app.get('/seasonalRanked',async (req, res) => {
+    let data = await getOrganizedRankedStats(db)
+    res.send(data);
+})
 
 
 server.listen(3100, () => {
@@ -64,6 +76,7 @@ const players = [
 ];
 
 
+
 for (let player of players) {
     let playerExists = await checkPlayerExists(db, player)
     console.log(playerExists.exists && playerExists.player.playerId)
@@ -73,27 +86,33 @@ for (let player of players) {
     // let playerId = playerExists?.player?.playerId
     let playerId = ""
     try {
-        if (!playerExists.exists){
-            if (!playerId.startsWith("account.")){
-                    console.log("player", player)
-                    let playerInfo = await getPlayerData(player)
-                    playerId = playerInfo.data[0].id
+        // if (!playerExists.exists){
+        //     if (!playerId.startsWith("account.")){
+        //             console.log("player", player)
+        //             let playerInfo = await getPlayerData(player)
+        //             playerId = playerInfo.data[0].id
+        //
+        //
+        //
+        //     }
+        //
+        //     await createPlayer(db, player, playerId)
+        // }else{
+        //     playerId = playerExists.player.playerId
+        // }
 
 
+        // let playerSeasonData = await getPlayerSeasonData(playerId, "division.bro.official.pc-2018-34")
+        // let tr = transformPlayerSeasonData(playerSeasonData)
+        // for (let r of tr){
+        //     await upsertPlayerGameModeStats(db, r)
+        // }
 
-            }
-
-            await createPlayer(db, player, playerId)
-        }else{
-            playerId = playerExists.player.playerId
-        }
-
-
-        let playerSeasonData = await getPlayerSeasonData(playerId, "division.bro.official.pc-2018-34")
-        let tr = transformPlayerSeasonData(playerSeasonData)
-        for (let r of tr){
-            await upsertPlayerGameModeStats(db, r)
-        }
+        // let rankedSeasonData = await getPlayerSeasonRankedData(playerId, "division.bro.official.pc-2018-34")
+        // let tr = transformRankedPlayerStats(rankedSeasonData)
+        // for (let r of tr){
+        //     await upsertPlayerRankedStats(db, r)
+        // }
     }catch (error) {
         console.log("error", error)
     }

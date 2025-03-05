@@ -1,5 +1,5 @@
 import { eq, and } from 'drizzle-orm';
-import { playerGameModeStats, playerRankedStats } from './schema.js';
+import {playerGameModeStats, playerRankedStats, players} from './schema.js';
 import {PlayerSeasonData, RankedPlayerStats} from "../types.js";
 
  // Assuming you have a DB connection setup
@@ -463,6 +463,392 @@ export function transformRankedPlayerStats(rankedPlayerStats: RankedPlayerStats)
         };
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Gets all game mode stats with associated player names
+ * @returns Array of game mode stats with player information
+ */
+export async function getAllGameModeStatsWithPlayerNames(db: any, ) {
+    const results = await db
+        .select({
+            // Player info
+            playerId: players.playerId,
+            username: players.username,
+
+            // Game mode stat info
+            playerGameModeStatId: playerGameModeStats.playerGameModeStatId,
+            gameMode: playerGameModeStats.gameMode,
+            perspective: playerGameModeStats.perspective,
+            assists: playerGameModeStats.assists,
+            boosts: playerGameModeStats.boosts,
+            dBNOs: playerGameModeStats.dBNOs,
+            dailyKills: playerGameModeStats.dailyKills,
+            dailyWins: playerGameModeStats.dailyWins,
+            damageDealt: playerGameModeStats.damageDealt,
+            days: playerGameModeStats.days,
+            headshotKills: playerGameModeStats.headshotKills,
+            heals: playerGameModeStats.heals,
+            killPoints: playerGameModeStats.killPoints,
+            kills: playerGameModeStats.kills,
+            longestKill: playerGameModeStats.longestKill,
+            longestTimeSurvived: playerGameModeStats.longestTimeSurvived,
+            losses: playerGameModeStats.losses,
+            maxKillStreaks: playerGameModeStats.maxKillStreaks,
+            mostSurvivalTime: playerGameModeStats.mostSurvivalTime,
+            revives: playerGameModeStats.revives,
+            rideDistance: playerGameModeStats.rideDistance,
+            roadKills: playerGameModeStats.roadKills,
+            roundMostKills: playerGameModeStats.roundMostKills,
+            roundsPlayed: playerGameModeStats.roundsPlayed,
+            suicides: playerGameModeStats.suicides,
+            swimDistance: playerGameModeStats.swimDistance,
+            teamKills: playerGameModeStats.teamKills,
+            timeSurvived: playerGameModeStats.timeSurvived,
+            top10s: playerGameModeStats.top10s,
+            vehicleDestroys: playerGameModeStats.vehicleDestroys,
+            walkDistance: playerGameModeStats.walkDistance,
+            weaponsAcquired: playerGameModeStats.weaponsAcquired,
+            weeklyKills: playerGameModeStats.weeklyKills,
+            weeklyWins: playerGameModeStats.weeklyWins,
+            winPoints: playerGameModeStats.winPoints,
+            wins: playerGameModeStats.wins,
+            updatedAt: playerGameModeStats.updatedAt,
+        })
+        .from(playerGameModeStats)
+        .innerJoin(players, eq(playerGameModeStats.playerId, players.playerId));
+
+    return results;
+}
+
+/**
+ * Gets all ranked stats with associated player names
+ * @returns Array of ranked stats with player information
+ */
+export async function getAllRankedStatsWithPlayerNames(db: any, ) {
+    const results = await db
+        .select({
+            // Player info
+            playerId: players.playerId,
+            username: players.username,
+
+            // Ranked stats info
+            playerRankedStatId: playerRankedStats.playerRankedStatId,
+            gameMode: playerRankedStats.gameMode,
+            perspective: playerRankedStats.perspective,
+            currentTier: playerRankedStats.currentTier,
+            currentSubTier: playerRankedStats.currentSubTier,
+            currentRankPoint: playerRankedStats.currentRankPoint,
+            bestTier: playerRankedStats.bestTier,
+            bestSubTier: playerRankedStats.bestSubTier,
+            bestRankPoint: playerRankedStats.bestRankPoint,
+            roundsPlayed: playerRankedStats.roundsPlayed,
+            avgRank: playerRankedStats.avgRank,
+            avgSurvivalTime: playerRankedStats.avgSurvivalTime,
+            top10Ratio: playerRankedStats.top10Ratio,
+            winRatio: playerRankedStats.winRatio,
+            assists: playerRankedStats.assists,
+            wins: playerRankedStats.wins,
+            kda: playerRankedStats.kda,
+            kdr: playerRankedStats.kdr,
+            kills: playerRankedStats.kills,
+            deaths: playerRankedStats.deaths,
+            roundMostKills: playerRankedStats.roundMostKills,
+            longestKill: playerRankedStats.longestKill,
+            headshotKills: playerRankedStats.headshotKills,
+            headshotKillRatio: playerRankedStats.headshotKillRatio,
+            damageDealt: playerRankedStats.damageDealt,
+            dBNOs: playerRankedStats.dBNOs,
+            reviveRatio: playerRankedStats.reviveRatio,
+            revives: playerRankedStats.revives,
+            heals: playerRankedStats.heals,
+            boosts: playerRankedStats.boosts,
+            weaponsAcquired: playerRankedStats.weaponsAcquired,
+            teamKills: playerRankedStats.teamKills,
+            playTime: playerRankedStats.playTime,
+            killStreak: playerRankedStats.killStreak,
+            updatedAt: playerRankedStats.updatedAt,
+        })
+        .from(playerRankedStats)
+        .innerJoin(players, eq(playerRankedStats.playerId, players.playerId));
+
+    return results;
+}
+
+/**
+ * Gets game mode stats for a specific player by username
+ * @param username The player's username
+ * @returns The player's game mode stats or null if not found
+ */
+export async function getGameModeStatsByUsername(db: any, username: string) {
+    const results = await db
+        .select({
+            // Player info
+            playerId: players.playerId,
+            username: players.username,
+
+            // Game mode stat info
+            playerGameModeStatId: playerGameModeStats.playerGameModeStatId,
+            gameMode: playerGameModeStats.gameMode,
+            perspective: playerGameModeStats.perspective,
+            assists: playerGameModeStats.assists,
+            boosts: playerGameModeStats.boosts,
+            dBNOs: playerGameModeStats.dBNOs,
+            dailyKills: playerGameModeStats.dailyKills,
+            dailyWins: playerGameModeStats.dailyWins,
+            damageDealt: playerGameModeStats.damageDealt,
+            days: playerGameModeStats.days,
+            headshotKills: playerGameModeStats.headshotKills,
+            heals: playerGameModeStats.heals,
+            killPoints: playerGameModeStats.killPoints,
+            kills: playerGameModeStats.kills,
+            longestKill: playerGameModeStats.longestKill,
+            longestTimeSurvived: playerGameModeStats.longestTimeSurvived,
+            losses: playerGameModeStats.losses,
+            maxKillStreaks: playerGameModeStats.maxKillStreaks,
+            mostSurvivalTime: playerGameModeStats.mostSurvivalTime,
+            revives: playerGameModeStats.revives,
+            rideDistance: playerGameModeStats.rideDistance,
+            roadKills: playerGameModeStats.roadKills,
+            roundMostKills: playerGameModeStats.roundMostKills,
+            roundsPlayed: playerGameModeStats.roundsPlayed,
+            suicides: playerGameModeStats.suicides,
+            swimDistance: playerGameModeStats.swimDistance,
+            teamKills: playerGameModeStats.teamKills,
+            timeSurvived: playerGameModeStats.timeSurvived,
+            top10s: playerGameModeStats.top10s,
+            vehicleDestroys: playerGameModeStats.vehicleDestroys,
+            walkDistance: playerGameModeStats.walkDistance,
+            weaponsAcquired: playerGameModeStats.weaponsAcquired,
+            weeklyKills: playerGameModeStats.weeklyKills,
+            weeklyWins: playerGameModeStats.weeklyWins,
+            winPoints: playerGameModeStats.winPoints,
+            wins: playerGameModeStats.wins,
+            updatedAt: playerGameModeStats.updatedAt,
+        })
+        .from(playerGameModeStats)
+        .innerJoin(players, eq(playerGameModeStats.playerId, players.playerId))
+        .where(eq(players.username, username));
+
+    return results.length > 0 ? results : null;
+}
+
+/**
+ * Gets ranked stats for a specific player by username
+ * @param username The player's username
+ * @returns The player's ranked stats or null if not found
+ */
+export async function getRankedStatsByUsername(db: any, username: string) {
+    const results = await db
+        .select({
+            // Player info
+            playerId: players.playerId,
+            username: players.username,
+
+            // Ranked stats info
+            playerRankedStatId: playerRankedStats.playerRankedStatId,
+            gameMode: playerRankedStats.gameMode,
+            perspective: playerRankedStats.perspective,
+            currentTier: playerRankedStats.currentTier,
+            currentSubTier: playerRankedStats.currentSubTier,
+            currentRankPoint: playerRankedStats.currentRankPoint,
+            bestTier: playerRankedStats.bestTier,
+            bestSubTier: playerRankedStats.bestSubTier,
+            bestRankPoint: playerRankedStats.bestRankPoint,
+            roundsPlayed: playerRankedStats.roundsPlayed,
+            avgRank: playerRankedStats.avgRank,
+            avgSurvivalTime: playerRankedStats.avgSurvivalTime,
+            top10Ratio: playerRankedStats.top10Ratio,
+            winRatio: playerRankedStats.winRatio,
+            assists: playerRankedStats.assists,
+            wins: playerRankedStats.wins,
+            kda: playerRankedStats.kda,
+            kdr: playerRankedStats.kdr,
+            kills: playerRankedStats.kills,
+            deaths: playerRankedStats.deaths,
+            roundMostKills: playerRankedStats.roundMostKills,
+            longestKill: playerRankedStats.longestKill,
+            headshotKills: playerRankedStats.headshotKills,
+            headshotKillRatio: playerRankedStats.headshotKillRatio,
+            damageDealt: playerRankedStats.damageDealt,
+            dBNOs: playerRankedStats.dBNOs,
+            reviveRatio: playerRankedStats.reviveRatio,
+            revives: playerRankedStats.revives,
+            heals: playerRankedStats.heals,
+            boosts: playerRankedStats.boosts,
+            weaponsAcquired: playerRankedStats.weaponsAcquired,
+            teamKills: playerRankedStats.teamKills,
+            playTime: playerRankedStats.playTime,
+            killStreak: playerRankedStats.killStreak,
+            updatedAt: playerRankedStats.updatedAt,
+        })
+        .from(playerRankedStats)
+        .innerJoin(players, eq(playerRankedStats.playerId, players.playerId))
+        .where(eq(players.username, username));
+
+    return results.length > 0 ? results : null;
+}
+
+
+
+/**
+ * Organizes game mode stats into a structured object grouped by game mode and perspective
+ * @param username Optional username to filter by specific player
+ * @returns Object with stats grouped by game mode and perspective
+ */
+export async function getOrganizedGameModeStats(db:any , username?: string) {
+    // Get the stats data based on whether a username was provided
+    const statsData = username
+        ? await getGameModeStatsByUsername(db, username)
+        : await getAllGameModeStatsWithPlayerNames(db);
+
+    if (!statsData) {
+        return null;
+    }
+
+    // Initialize the result object
+    const organizedStats: Record<string, any[]> = {};
+
+    // Process each stat entry
+    statsData.forEach(stat => {
+        // Create the key in format "gameMode_perspective" or just "gameMode" if no perspective
+        const key = stat.perspective
+            ? `${stat.gameMode}_${stat.perspective}`.toLowerCase()
+            : stat.gameMode.toLowerCase();
+
+        // Initialize the array for this key if it doesn't exist
+        if (!organizedStats[key]) {
+            organizedStats[key] = [];
+        }
+
+        // Add the stat to the appropriate array
+        organizedStats[key].push({
+            playerId: stat.playerId,
+            username: stat.username,
+            statId: stat.playerGameModeStatId,
+            assists: stat.assists,
+            boosts: stat.boosts,
+            dBNOs: stat.dBNOs,
+            dailyKills: stat.dailyKills,
+            dailyWins: stat.dailyWins,
+            damageDealt: stat.damageDealt,
+            days: stat.days,
+            headshotKills: stat.headshotKills,
+            heals: stat.heals,
+            killPoints: stat.killPoints,
+            kills: stat.kills,
+            longestKill: stat.longestKill,
+            longestTimeSurvived: stat.longestTimeSurvived,
+            losses: stat.losses,
+            maxKillStreaks: stat.maxKillStreaks,
+            mostSurvivalTime: stat.mostSurvivalTime,
+            revives: stat.revives,
+            rideDistance: stat.rideDistance,
+            roadKills: stat.roadKills,
+            roundMostKills: stat.roundMostKills,
+            roundsPlayed: stat.roundsPlayed,
+            suicides: stat.suicides,
+            swimDistance: stat.swimDistance,
+            teamKills: stat.teamKills,
+            timeSurvived: stat.timeSurvived,
+            top10s: stat.top10s,
+            vehicleDestroys: stat.vehicleDestroys,
+            walkDistance: stat.walkDistance,
+            weaponsAcquired: stat.weaponsAcquired,
+            weeklyKills: stat.weeklyKills,
+            weeklyWins: stat.weeklyWins,
+            winPoints: stat.winPoints,
+            wins: stat.wins,
+            updatedAt: stat.updatedAt,
+        });
+    });
+
+    return organizedStats;
+}
+
+/**
+ * Organizes ranked stats into a structured object grouped by game mode and perspective
+ * @param username Optional username to filter by specific player
+ * @returns Object with stats grouped by game mode and perspective
+ */
+export async function getOrganizedRankedStats(db:any , username?: string) {
+    // Get the stats data based on whether a username was provided
+    const statsData = username
+        ? await getRankedStatsByUsername(db, username)
+        : await getAllRankedStatsWithPlayerNames(db);
+
+    if (!statsData) {
+        return null;
+    }
+
+    // Initialize the result object
+    const organizedStats: Record<string, any[]> = {};
+
+    // Process each stat entry
+    statsData.forEach(stat => {
+        // Create the key in format "gameMode_perspective" or just "gameMode" if no perspective
+        const key = stat.perspective
+            ? `${stat.gameMode}_${stat.perspective}`.toLowerCase()
+            : stat.gameMode.toLowerCase();
+
+        // Initialize the array for this key if it doesn't exist
+        if (!organizedStats[key]) {
+            organizedStats[key] = [];
+        }
+
+        // Add the stat to the appropriate array
+        organizedStats[key].push({
+            playerId: stat.playerId,
+            username: stat.username,
+            statId: stat.playerRankedStatId,
+            currentTier: stat.currentTier,
+            currentSubTier: stat.currentSubTier,
+            currentRankPoint: stat.currentRankPoint,
+            bestTier: stat.bestTier,
+            bestSubTier: stat.bestSubTier,
+            bestRankPoint: stat.bestRankPoint,
+            roundsPlayed: stat.roundsPlayed,
+            avgRank: stat.avgRank,
+            avgSurvivalTime: stat.avgSurvivalTime,
+            top10Ratio: stat.top10Ratio,
+            winRatio: stat.winRatio,
+            assists: stat.assists,
+            wins: stat.wins,
+            kda: stat.kda,
+            kdr: stat.kdr,
+            kills: stat.kills,
+            deaths: stat.deaths,
+            roundMostKills: stat.roundMostKills,
+            longestKill: stat.longestKill,
+            headshotKills: stat.headshotKills,
+            headshotKillRatio: stat.headshotKillRatio,
+            damageDealt: stat.damageDealt,
+            dBNOs: stat.dBNOs,
+            reviveRatio: stat.reviveRatio,
+            revives: stat.revives,
+            heals: stat.heals,
+            boosts: stat.boosts,
+            weaponsAcquired: stat.weaponsAcquired,
+            teamKills: stat.teamKills,
+            playTime: stat.playTime,
+            killStreak: stat.killStreak,
+            updatedAt: stat.updatedAt,
+        });
+    });
+
+    return organizedStats;
+}
+
 
 //
 // // Parse and upsert game mode stats from API JSON
