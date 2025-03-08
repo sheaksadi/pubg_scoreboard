@@ -1,5 +1,5 @@
 import { eq, and } from 'drizzle-orm';
-import {playerGameModeStats, playerRankedStats, players} from './schema.js';
+import {playerGameModeStats, playerRankedStats, players} from './schema_old.js';
 import {PlayerSeasonData, RankedPlayerStats} from "../types.js";
 
  // Assuming you have a DB connection setup

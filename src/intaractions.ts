@@ -12,7 +12,7 @@ import {
     findOrCreatePlayer,
     getTopPlayers,
     resetPlayerTotals
-} from "./db/schema.js";
+} from "./db/schema_old.js";
 import {MatchData, Team} from "./types.js";
 
 let lastCustomGameId: string | null = null;

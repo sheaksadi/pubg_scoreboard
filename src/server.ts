@@ -2,7 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
 
-import {checkPlayerExists, createPlayer, getTopPlayers} from "./db/schema.js";
+import {checkPlayerExists, createPlayer, getTopPlayers} from "./db/schema_old.js";
 import {db} from "./config.js";
 import {getPlayerData, getPlayerSeasonData, getPlayerSeasonRankedData} from "./api.js";
 import {

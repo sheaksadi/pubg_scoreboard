@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
-import { Client, GatewayIntentBits } from 'discord.js';
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { Client as DiscordClient, GatewayIntentBits } from 'discord.js';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import pkg from 'pg';
+const { Pool } = pkg;
+import 'dotenv/config';
 
 dotenv.config({ path: ".env" });
 
@@ -17,22 +19,24 @@ export const DISCORD_CONFIG = {
 
 export const JWT_SECRET = process.env.JWT_SECRET || 'hehesecter420'
 
-
-export const client = new Client({
+// Create Discord client
+export const client = new DiscordClient({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildVoiceStates,
-        GatewayIntentBits.GuildMessageReactions
     ]
 });
 
-const sqlite = new Database("./" + process.env.DB_FILE_NAME!);
-console.log("./" + process.env.DB_FILE_NAME!)
-console.log(sqlite)
-export const db = drizzle(sqlite);
+// Create PostgreSQL connection pool
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+});
 
-
+// Create a Drizzle instance using the PostgreSQL client
+export const db = drizzle(pool);

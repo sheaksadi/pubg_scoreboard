@@ -1,7 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
-import {getTopPlayers} from "../db/schema.js";
+import {getTopPlayers} from "../db/schema_old.js";
 import {db} from "../config.js";
 import {auth} from "./auth/auth.js";
 import cookieParser from "cookie-parser";
