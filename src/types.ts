@@ -103,7 +103,7 @@ export interface TeamMember extends Participant {
 
 
 export type PlayerResponse = {
-    data: Array<{
+    data: {
         type: string;
         id: string;
         attributes: {
@@ -130,7 +130,7 @@ export type PlayerResponse = {
             self: string;
             schema: string;
         };
-    }>;
+    }[];
     links: {
         self: string;
     };
@@ -304,4 +304,35 @@ export interface RankedGameModeStats {
 export interface Match {
     type: string;
     id: string;
+}
+
+
+// src/types/ChannelSession.ts
+import { User } from "discord.js";
+
+export interface ChannelSession {
+    user: User;
+    sessionId: string;
+    joinTime: number;
+}
+
+// src/types/ActivityData.ts
+export interface ActivityData {
+    activity: string;
+    details: string;
+    sessionId: string;
+    startTime: number;
+    timestamp: number;
+}
+
+// src/types/PubgActivityData.ts
+export interface PubgActivityData {
+    activity: string;
+    details: string;
+    mapName: string;
+    gameMode: string;
+    pubgId: string;
+    sessionId: string;
+    startTime: number;
+    timestamp: number;
 }

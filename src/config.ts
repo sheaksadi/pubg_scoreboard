@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Client as DiscordClient, GatewayIntentBits } from 'discord.js';
+import {Client as DiscordClient, GatewayIntentBits, Guild} from 'discord.js';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -16,7 +16,7 @@ export const DISCORD_CONFIG = {
     clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
     redirectUri: process.env.DISCORD_REDIRECT_URI || 'http://localhost:3100/api/auth/callback'
 }
-
+export const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || '';
 export const JWT_SECRET = process.env.JWT_SECRET || 'hehesecter420'
 
 // Create Discord client
@@ -28,6 +28,9 @@ export const client = new DiscordClient({
         GatewayIntentBits.GuildVoiceStates,
     ]
 });
+
+
+
 
 // Create PostgreSQL connection pool
 const pool = new Pool({

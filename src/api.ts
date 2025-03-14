@@ -30,7 +30,11 @@ const limiter = new RateLimiter({
     interval: 1000 * 60, // 1 second
     fireImmediately: false
 });
-
+const seasonalLimiter = new RateLimiter({
+    tokensPerInterval: 1,
+    interval: 1000 * 60,
+    fireImmediately: false
+})
 export async function getPlayerData(playerName: string): Promise<PlayerResponse> {
     try {
         // Wait for rate limiter to allow the request
@@ -51,10 +55,30 @@ export async function getPlayerData(playerName: string): Promise<PlayerResponse>
         throw error;
     }
 }
+export async function getPlayerDataFromId(id: string) :Promise<PlayerResponse>{
+    try {
+        // Wait for rate limiter to allow the request
+        await limiter.removeTokens(1);
+
+        const response =  await api.get('steam/players', {
+            params: {
+                'filter[playerIds]': id
+            }
+        });
+        return response.data;
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error fetching player data:', error.message);
+        } else {
+            console.error('Error fetching player data:', error);
+        }
+        throw error;
+    }
+}
 
 
 export async function getPlayerSeasonData(playerAccountId: string, seasonId: string): Promise<PlayerSeasonData> {
-    await limiter.removeTokens(1);
+    await seasonalLimiter.removeTokens(1);
     try {
         const response = await api.get(`steam/players/${playerAccountId}/seasons/${seasonId}`);
         return response.data;
@@ -69,7 +93,7 @@ export async function getPlayerSeasonData(playerAccountId: string, seasonId: str
 }
 
 export async function getPlayerSeasonRankedData(playerAccountId: string, seasonId: string): Promise<RankedPlayerStats> {
-    await limiter.removeTokens(1);
+    await seasonalLimiter.removeTokens(1);
     try {
         const response = await api.get(`steam/players/${playerAccountId}/seasons/${seasonId}/ranked`);
         return response.data;

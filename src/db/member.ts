@@ -1,8 +1,9 @@
-import { db } from './../config.js'; // Your database client
+import {client, db, DISCORD_GUILD_ID} from './../config.js'; // Your database client
 import {discordUsers, members} from './schema.js'; // Import your schema
-import { User } from 'discord.js';
+import {User} from 'discord.js';
 import {eq} from "drizzle-orm"; // Import the Discord-provided user type
-import { InferInsertModel } from 'drizzle-orm'; // Import the correct type
+import {InferInsertModel} from 'drizzle-orm';
+import {guild} from "../index.js"; // Import the correct type
 
 
 // Define the type for the insert values
@@ -11,6 +12,11 @@ export type DiscordUserInsert = {
     id: string;
     username: string;
     avatar?: string | null;
+    roles: {
+        name: string;
+        color: string;
+        id: string;
+    }[]
     discriminator?: string | null;
     public_flags?: number | null;
     flags?: number | null;
@@ -24,15 +30,21 @@ export type DiscordUserInsert = {
 };
 
 
-export async function findOrCreateDiscordUser(discordUser: User) {
+export async function findOrCreateDiscordUser(discordUser: User, roles: {
+    name: string;
+    color: string;
+    id: string;
+}[] = []) {
     // Check if the user already exists
     let user = await db.select().from(discordUsers).where(eq(discordUsers.id, discordUser.id));
 
     if (user.length === 0) {
+
         // Create a properly typed object for insert
         const newUser: DiscordUserInsert = {
             id: discordUser.id,
             username: discordUser.username,
+            roles,
             // Add optional fields with null fallbacks
             avatar: discordUser.avatar || null,
             discriminator: discordUser.discriminator || null,
@@ -54,8 +66,24 @@ export async function findOrCreateDiscordUser(discordUser: User) {
     return user[0];
 }
 
-export async function findOrCreateMemberFromUser(discordUser: User) {
-    let user = await findOrCreateDiscordUser(discordUser);
+export async function setNickName(discordId: string, name: string) {
+    await db.update(members).set({nickname: name}).where(eq(members.discordId, discordId)).returning();
+}
+
+
+
+
+export async function findOrCreateMemberFromUser(discordUser: User){
+    let roles = []
+    let member = await guild.members.fetch(discordUser.id)
+    for (let [id, r] of member.roles.cache){
+        roles.push({
+            name: r.name,
+            id: id,
+            color: r.color.toString(16).padStart(6, '0')
+        })
+    }
+    let user = await findOrCreateDiscordUser(discordUser, roles);
     return await findOrCreateMember(user.id);
 }
 
@@ -64,7 +92,7 @@ export async function findDiscordUser(id: string) {
 }
 
 export async function createMember(discordId: string, playerId?: string) {
-    return (await db.insert(members).values({ playerId, discordId }).returning())[0];
+    return (await db.insert(members).values({playerId, discordId}).returning())[0];
 }
 
 export async function getOrSetMemberPlayerId(discordId: string, playerId?: string) {
@@ -74,8 +102,9 @@ export async function getOrSetMemberPlayerId(discordId: string, playerId?: strin
         return createMember(discordId, playerId);
     }
     if (member[0].playerId === null) {
-        db.update(members).set({ playerId }).where(eq(members.discordId, discordId));
+        await db.update(members).set({playerId}).where(eq(members.discordId, discordId)).returning();
     }
+
     return member[0];
 
 }
@@ -88,3 +117,4 @@ export async function findOrCreateMember(discordId: string, playerId?: string) {
     }
     return member[0];
 }
+

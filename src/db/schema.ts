@@ -1,4 +1,4 @@
-import {integer, real, text, pgTable, primaryKey, timestamp, serial} from 'drizzle-orm/pg-core';
+import {integer, real, text, pgTable, primaryKey, timestamp, serial, jsonb} from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 // Players table
@@ -17,6 +17,7 @@ export const players = pgTable('players', {
 export const discordUsers = pgTable('discord_users', {
     id: text('id').primaryKey().notNull().unique(),
     username: text('username').notNull(),
+    roles: jsonb("roles").default([]),
     avatar: text('avatar'),
     discriminator: text('discriminator'),
     public_flags: integer('public_flags'),
@@ -30,26 +31,6 @@ export const discordUsers = pgTable('discord_users', {
     createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-// Discord Roles table
-export const discordRoles = pgTable('discord_roles', {
-    roleId: text('role_id').primaryKey().notNull().unique(),
-    name: text('name').notNull().unique(),
-    color: integer('color'),
-    createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
-});
-
-// Discord User Roles table
-export const discordUserRoles = pgTable('discord_user_roles', {
-    discordId: text('discord_id')
-        .notNull()
-        .references(() => discordUsers.id, { onDelete: 'cascade' }),
-    roleId: text('role_id')
-        .notNull()
-        .references(() => discordRoles.roleId, { onDelete: 'cascade' }),
-    assignedAt: timestamp('assigned_at').default(sql`CURRENT_TIMESTAMP`),
-}, (table) => ({
-    pk: primaryKey({ columns: [table.discordId, table.roleId] })
-}));
 
 // Members table - Changed from PascalCase to camelCase for consistency
 export const members = pgTable('members', {
@@ -66,12 +47,12 @@ export const members = pgTable('members', {
 
 // Discord Channel Sessions table
 export const discordChannelSessions = pgTable('discord_channel_sessions', {
-    id: text('id').primaryKey().notNull().unique(),
-    channelId: text('channel_id'),
-    guildId: text('guild_id'),
-    memberId: integer('member_id').notNull() // Changed to text to match members.id
+    id: text('id').primaryKey().unique().notNull(),
+    channelId: text('channel_id').notNull(),
+    guildId: text('guild_id').default(""),
+    memberId: integer('member_id').notNull()
         .references(() => members.id), // Added reference to ensure consistency
-    duration: integer('duration'),
+    duration: integer('duration').notNull(),
     createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -80,8 +61,7 @@ export const memberActivities = pgTable('member_activities', {
     id: serial('id').primaryKey(), // Changed to text for consistency
     memberId: integer('member_id') // Changed to text to match members.id
         .references(() => members.id),
-    sessionId: text('session_id')
-        .references(() => discordChannelSessions.id), // Added reference
+    sessionId: text('session_id'),// Added reference
     activity: text('activity'),
     details: text('details'),
     duration: integer('duration'),
@@ -93,9 +73,7 @@ export const memberPubgActivities = pgTable('member_pubg_activities', {
     id: serial('id').primaryKey(), // Changed to text for consistency
     memberId: integer('member_id') // Changed to text to match members.id
         .references(() => members.id),
-    sessionId: text('session_id')
-        .references(() => discordChannelSessions.id), // Added reference
-    activity: text('activity'),
+    sessionId: text('session_id'),
     details: text('details'),
     duration: integer('duration'),
     gameMode: text('game_mode'),
